@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  }
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Box-sizing für alle Elemente */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Moderne, ruhige UI - NUR Schatten, keine dicken Rahmen! */
+
+/* Fahrzeugbild - Subtiler Rahmen */
+div.image-border,
+.image-border {
+  border: 1px solid rgb(229 231 235) !important;
+}
+
+/* Grüne Tabs für Fahrzeugunterlagen */
+.bg-green-600 {
+  background-color: rgb(22 163 74) !important;
+}
+
+.bg-green-600:hover {
+  background-color: rgb(21 128 61) !important;
+}
+
+.text-green-100 {
+  color: rgb(220 252 231) !important;
+}
+
+/* Kennzeichen-Komponente - Kein Rahmen */
+.kennzeichen-plate {
+  border: none !important;
+}
+
+.bg-blue-600 {
+  background-color: rgb(37 99 235) !important;
+}
+
+.text-yellow-400 {
+  color: rgb(250 204 21) !important;
+}
+
+/* Moderne Typografie - Werte prominenter als Labels */
