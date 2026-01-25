@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getWartungsmeldungenByFahrzeugId } from '../../lib/firestore';
+import { getSchadensmeldungenByFahrzeugId } from '../../../lib/firestore';
 
 export default async function handler(
   req: VercelRequest,
@@ -25,10 +25,10 @@ export default async function handler(
   }
 
   try {
-    const wartungen = await getWartungsmeldungenByFahrzeugId(fahrzeugId);
-    return res.status(200).json(wartungen);
+    const schäden = await getSchadensmeldungenByFahrzeugId(fahrzeugId);
+    return res.status(200).json(schäden);
   } catch (error) {
-    console.error('Fehler beim Abrufen der Wartungsmeldungen:', error);
+    console.error('Fehler beim Abrufen der Schadensmeldungen:', error);
     return res.status(500).json({ error: 'Interner Serverfehler' });
   }
 }

@@ -29,8 +29,8 @@ export default function MeldungenListe() {
       const allWartung: WartungsMeldung[] = [];
 
       for (const fahrzeug of fahrzeugeData) {
-        const schadenRes = await fetch(`/api/fahrer/schaden/${fahrzeug.id}`);
-        const wartungRes = await fetch(`/api/fahrer/wartung/${fahrzeug.id}`);
+        const schadenRes = await fetch(`/api/fahrer/schaden/fahrzeug/${fahrzeug.id}`);
+        const wartungRes = await fetch(`/api/fahrer/wartung/fahrzeug/${fahrzeug.id}`);
         
         const schadenData = await schadenRes.json();
         const wartungData = await wartungRes.json();

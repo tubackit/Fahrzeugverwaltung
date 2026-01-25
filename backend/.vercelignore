@@ -4,3 +4,5 @@ src/
 node_modules/
 dist/
 scripts/
+*.backup
+package.json.backup

@@ -65,8 +65,8 @@ export default function EnterpriseDashboard({ activeView }: EnterpriseDashboardP
         fahrzeuge.map(async (fahrzeug) => {
           try {
             const [schadenRes, wartungRes] = await Promise.all([
-              fetch(`/api/fahrer/schaden/${fahrzeug.id}`),
-              fetch(`/api/fahrer/wartung/${fahrzeug.id}`),
+              fetch(`/api/fahrer/schaden/fahrzeug/${fahrzeug.id}`),
+              fetch(`/api/fahrer/wartung/fahrzeug/${fahrzeug.id}`),
             ]);
 
             const schadenData = await schadenRes.json();
@@ -89,8 +89,8 @@ export default function EnterpriseDashboard({ activeView }: EnterpriseDashboardP
   const loadMeldungen = async (fahrzeugId: number) => {
     try {
       const [schadenRes, wartungRes] = await Promise.all([
-        fetch(`/api/fahrer/schaden/${fahrzeugId}`),
-        fetch(`/api/fahrer/wartung/${fahrzeugId}`),
+        fetch(`/api/fahrer/schaden/fahrzeug/${fahrzeugId}`),
+        fetch(`/api/fahrer/wartung/fahrzeug/${fahrzeugId}`),
       ]);
 
       const schadenData = await schadenRes.json();
