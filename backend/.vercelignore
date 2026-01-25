@@ -1,0 +1,6 @@
+src/
+*.sqlite
+*.sqlite3
+node_modules/
+dist/
+scripts/
