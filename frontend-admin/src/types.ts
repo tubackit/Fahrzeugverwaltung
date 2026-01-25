@@ -47,6 +47,9 @@ export interface Fahrzeug {
   versicherungsgesellschaft?: string;
   versicherungsnummer?: string;
   versicherungsart?: string;
+  versicherungsAnsprechpartner?: string;
+  versicherungsEmail?: string;
+  versicherungsTelefon?: string;
   deckungssumme?: number;
   selbstbeteiligungTeilkasko?: number;
   selbstbeteiligungVollkasko?: number;
@@ -54,6 +57,26 @@ export interface Fahrzeug {
   vertragsbeginn?: string;
   vertragsende?: string;
   schadenfreiheitsklasse?: string;
+  // Reifen-Daten (Sommerreifen)
+  reifenMarkeSommer?: string;
+  reifenModellSommer?: string;
+  reifenGroesseSommer?: string;
+  reifenMontagedatumSommer?: string;
+  reifenKmBeiMontageSommer?: number;
+  reifenProfiltiefeVLSommer?: number; // Vorne Links
+  reifenProfiltiefeVRSommer?: number; // Vorne Rechts
+  reifenProfiltiefeHLSommer?: number; // Hinten Links
+  reifenProfiltiefeHRSommer?: number; // Hinten Rechts
+  // Reifen-Daten (Winterreifen)
+  reifenMarkeWinter?: string;
+  reifenModellWinter?: string;
+  reifenGroesseWinter?: string;
+  reifenMontagedatumWinter?: string;
+  reifenKmBeiMontageWinter?: number;
+  reifenProfiltiefeVLWinter?: number; // Vorne Links
+  reifenProfiltiefeVRWinter?: number; // Vorne Rechts
+  reifenProfiltiefeHLWinter?: number; // Hinten Links
+  reifenProfiltiefeHRWinter?: number; // Hinten Rechts
   createdAt: string;
   updatedAt: string;
 }

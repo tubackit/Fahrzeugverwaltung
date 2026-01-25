@@ -7,7 +7,7 @@ interface KmStandFormProps {
 }
 
 export default function KmStandForm({ fahrzeugId, currentKmStand, onSuccess }: KmStandFormProps) {
-  const [kmStand, setKmStand] = useState(currentKmStand.toString());
+  const [kmStand, setKmStand] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -57,20 +57,21 @@ export default function KmStandForm({ fahrzeugId, currentKmStand, onSuccess }: K
           <label htmlFor="kmStand" className="block text-sm font-medium text-gray-700 mb-2">
             Neuer Kilometerstand
           </label>
-          <div className="relative">
+          <div className="flex items-center gap-2">
             <input
               id="kmStand"
               type="number"
               step="0.1"
+              min={currentKmStand}
               value={kmStand}
               onChange={(e) => setKmStand(e.target.value)}
-              placeholder="z.B. 25500"
+              placeholder={`Aktuell: ${currentKmStand.toLocaleString('de-DE')} - Neue KM eingeben`}
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition pr-12"
+              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
               data-test-id="input-km-stand"
-              aria-label="Kilometerstand eingeben"
+              aria-label="Neuer Kilometerstand"
             />
-            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">km</span>
+            <span className="text-sm text-gray-600 font-medium whitespace-nowrap">km</span>
           </div>
           <p className="mt-2 text-sm text-gray-600">
             Aktuell: {currentKmStand.toLocaleString('de-DE')} km
@@ -103,5 +104,6 @@ export default function KmStandForm({ fahrzeugId, currentKmStand, onSuccess }: K
     </div>
   );
 }
+
 
 

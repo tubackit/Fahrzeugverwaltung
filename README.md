@@ -1,11 +1,11 @@
-# 🚗 Fahrzeug Plus 6 Enterprise
+# 🚗 AutoLogic
 
 Moderne Fahrzeugverwaltungssoftware mit separatem Fahrer-Portal.
 
 ## 🏗️ Projekt-Struktur
 
 ```
-fahrzeugverwaltung/
+autologic/
 ├── backend/           # Node.js + Express Backend API
 ├── frontend-admin/    # Admin Dashboard (React + TypeScript)
 ├── frontend-driver/   # Fahrer Portal (React + TypeScript)

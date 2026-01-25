@@ -3,13 +3,14 @@ import type { Fahrzeug } from '../types';
 import KmStandForm from './KmStandForm';
 import SchadensForm from './SchadensForm';
 import WartungsForm from './WartungsForm';
+import ReifenProfiltiefeForm from './ReifenProfiltiefeForm';
 
 interface DashboardProps {
   fahrzeug: Fahrzeug;
   onLogout: () => void;
 }
 
-type ActiveTab = 'km' | 'schaden' | 'wartung';
+type ActiveTab = 'km' | 'schaden' | 'wartung' | 'reifen';
 
 export default function Dashboard({ fahrzeug, onLogout }: DashboardProps) {
   const [activeTab, setActiveTab] = useState<ActiveTab>('km');
@@ -99,6 +100,18 @@ export default function Dashboard({ fahrzeug, onLogout }: DashboardProps) {
               >
                 🔧 Wartung
               </button>
+              <button
+                onClick={() => setActiveTab('reifen')}
+                className={`flex-1 py-4 px-1 text-center border-b-2 font-medium text-sm transition ${
+                  activeTab === 'reifen'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+                data-test-id="tab-reifen"
+                aria-label="Reifen Profiltiefe Tab"
+              >
+                🛞 Reifen
+              </button>
             </nav>
           </div>
 
@@ -122,11 +135,18 @@ export default function Dashboard({ fahrzeug, onLogout }: DashboardProps) {
                 currentKmStand={currentKmStand}
               />
             )}
+            {activeTab === 'reifen' && (
+              <ReifenProfiltiefeForm
+                fahrzeugId={fahrzeug.id}
+                currentKmStand={currentKmStand}
+              />
+            )}
           </div>
         </div>
       </div>
     </div>
   );
 }
+
 
 

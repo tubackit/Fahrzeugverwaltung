@@ -12,7 +12,41 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
-app.use(cors());
+// CORS konfigurieren - erlaubt Vercel-Domains und lokale Entwicklung
+const allowedOrigins = [
+  'http://localhost:5173', // Frontend-Admin lokal
+  'http://localhost:5174', // Frontend-Driver lokal
+  process.env.FRONTEND_ADMIN_URL, // Vercel Admin URL (wird als Env Variable gesetzt)
+  process.env.FRONTEND_DRIVER_URL, // Vercel Driver URL (wird als Env Variable gesetzt)
+].filter(Boolean) as string[];
+
+// Erlaube auch alle *.vercel.app Domains für Flexibilität
+app.use(cors({
+  origin: (origin, callback) => {
+    // Erlaube Requests ohne Origin (z.B. Postman, mobile Apps)
+    if (!origin) return callback(null, true);
+    
+    // Erlaube lokale Entwicklung
+    if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+      return callback(null, true);
+    }
+    
+    // Erlaube Vercel-Domains
+    if (origin.includes('.vercel.app')) {
+      return callback(null, true);
+    }
+    
+    // Erlaube explizit konfigurierte URLs
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    callback(null, true); // Für Entwicklung: erlaube alle Origins
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 app.use(express.json());
 
 // Request Logging
@@ -27,7 +61,7 @@ getDatabase();
 // Routes
 app.get('/', (_req: Request, res: Response) => {
   res.json({
-    message: 'Fahrzeug Plus 6 Enterprise API',
+    message: 'AutoLogic API',
     version: '1.0.0',
     endpoints: {
       fahrzeuge: '/api/fahrzeuge',

@@ -3,6 +3,7 @@ import type { Fahrzeug } from '../types';
 import FahrzeugForm from './FahrzeugForm';
 import Kennzeichen from './Kennzeichen';
 import DataCard, { DataField } from './DataCard';
+import NotizenModal from './NotizenModal';
 
 interface FahrzeugDetailsProps {
   fahrzeug: Fahrzeug;
@@ -11,6 +12,8 @@ interface FahrzeugDetailsProps {
 
 export default function FahrzeugDetails({ fahrzeug, onUpdate }: FahrzeugDetailsProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const [isNotizenModalOpen, setIsNotizenModalOpen] = useState(false);
+  const [notizenModalMode, setNotizenModalMode] = useState<'add' | 'edit'>('add');
 
   const handleFormClose = (saved: boolean) => {
     setIsEditing(false);
@@ -142,7 +145,7 @@ export default function FahrzeugDetails({ fahrzeug, onUpdate }: FahrzeugDetailsP
             <DataField label="Erstzulassung" value={fahrzeug.erstzulassung} type="date" />
             <DataField label="Anschaffungsjahr" value={fahrzeug.anschaffungsjahr} />
             <DataField label="Einsatzort" value={fahrzeug.einsatzort} />
-            <DataField label="Autohaus" value={fahrzeug.autohaus} />
+            <DataField label="Autohaus (E-Mail)" value={fahrzeug.autohaus} type="email" />
             <DataField label="Kostenträger" value={fahrzeug.kostentraeger} />
             <DataField label="Datum Anschaffung" value={fahrzeug.datumAnschaffung} type="date" />
             <DataField label="Leasing Ende" value={fahrzeug.leasingEnde} type="date" />
@@ -194,15 +197,75 @@ export default function FahrzeugDetails({ fahrzeug, onUpdate }: FahrzeugDetailsP
           </div>
         </DataCard>
 
-        {/* Bemerkungen */}
-        {fahrzeug.bemerkungen && (
-          <DataCard title="Bemerkungen" icon="📝">
-            <p className="text-sm text-gray-700 leading-relaxed">
-              {fahrzeug.bemerkungen}
-            </p>
-          </DataCard>
-        )}
+        {/* Notizen */}
+        <DataCard 
+          title="Notizen" 
+          icon="📝"
+          headerAction={
+            <button
+              onClick={() => {
+                setNotizenModalMode('add');
+                setIsNotizenModalOpen(true);
+              }}
+              className="px-3 py-1.5 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-1"
+              data-test-id="button-add-notiz"
+              aria-label="Notiz hinzufügen"
+            >
+              <span>+</span> Notiz hinzufügen
+            </button>
+          }
+        >
+          {fahrzeug.bemerkungen ? (
+            <div className="prose prose-sm max-w-none">
+              <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+                {fahrzeug.bemerkungen}
+              </p>
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <button
+                  onClick={() => {
+                    setNotizenModalMode('edit');
+                    setIsNotizenModalOpen(true);
+                  }}
+                  className="text-xs text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                  data-test-id="button-edit-notizen"
+                  aria-label="Notizen bearbeiten"
+                >
+                  ✏️ Bearbeiten
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              <p className="text-sm mb-2">Keine Notizen vorhanden</p>
+              <button
+                onClick={() => {
+                  setNotizenModalMode('add');
+                  setIsNotizenModalOpen(true);
+                }}
+                className="text-xs text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                data-test-id="button-add-notiz-empty"
+                aria-label="Notiz hinzufügen"
+              >
+                + Notiz hinzufügen
+              </button>
+            </div>
+          )}
+        </DataCard>
       </div>
+
+      {/* Notizen Modal */}
+      <NotizenModal
+        fahrzeug={fahrzeug}
+        isOpen={isNotizenModalOpen}
+        mode={notizenModalMode}
+        onClose={(saved) => {
+          setIsNotizenModalOpen(false);
+          if (saved) {
+            onUpdate();
+          }
+        }}
+        onUpdate={onUpdate}
+      />
     </div>
   );
 }

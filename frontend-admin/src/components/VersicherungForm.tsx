@@ -12,6 +12,9 @@ export default function VersicherungForm({ fahrzeug, onClose }: VersicherungForm
     versicherungsgesellschaft: fahrzeug.versicherungsgesellschaft || '',
     versicherungsnummer: fahrzeug.versicherungsnummer || '',
     versicherungsart: fahrzeug.versicherungsart || '',
+    versicherungsAnsprechpartner: fahrzeug.versicherungsAnsprechpartner || '',
+    versicherungsEmail: fahrzeug.versicherungsEmail || '',
+    versicherungsTelefon: fahrzeug.versicherungsTelefon || '',
     deckungssumme: fahrzeug.deckungssumme || '',
     selbstbeteiligungTeilkasko: fahrzeug.selbstbeteiligungTeilkasko || '',
     selbstbeteiligungVollkasko: fahrzeug.selbstbeteiligungVollkasko || '',
@@ -133,6 +136,57 @@ export default function VersicherungForm({ fahrzeug, onClose }: VersicherungForm
                 <option value="Teilkasko">Teilkasko</option>
                 <option value="Vollkasko">Vollkasko</option>
               </select>
+            </div>
+
+            <div>
+              <label htmlFor="versicherungsAnsprechpartner" className="block text-sm font-medium text-gray-700 mb-2">
+                Ansprechpartner
+              </label>
+              <input
+                id="versicherungsAnsprechpartner"
+                name="versicherungsAnsprechpartner"
+                type="text"
+                value={formData.versicherungsAnsprechpartner}
+                onChange={handleChange}
+                placeholder="z.B. Max Mustermann"
+                className="w-full px-4 py-2 border border-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-gray-400 outline-none transition"
+                data-test-id="input-versicherungs-ansprechpartner"
+                aria-label="Ansprechpartner"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="versicherungsEmail" className="block text-sm font-medium text-gray-700 mb-2">
+                E-Mail
+              </label>
+              <input
+                id="versicherungsEmail"
+                name="versicherungsEmail"
+                type="email"
+                value={formData.versicherungsEmail}
+                onChange={handleChange}
+                placeholder="z.B. kontakt@versicherung.de"
+                className="w-full px-4 py-2 border border-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-gray-400 outline-none transition"
+                data-test-id="input-versicherungs-email"
+                aria-label="E-Mail"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="versicherungsTelefon" className="block text-sm font-medium text-gray-700 mb-2">
+                Telefonnummer
+              </label>
+              <input
+                id="versicherungsTelefon"
+                name="versicherungsTelefon"
+                type="tel"
+                value={formData.versicherungsTelefon}
+                onChange={handleChange}
+                placeholder="z.B. +49 123 456789"
+                className="w-full px-4 py-2 border border-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-gray-400 outline-none transition"
+                data-test-id="input-versicherungs-telefon"
+                aria-label="Telefonnummer"
+              />
             </div>
 
             <div>

@@ -1,0 +1,22 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Fahrzeuge - Alle können lesen, alle können schreiben (für Start)
+    match /fahrzeuge/{fahrzeugId} {
+      allow read: if true;
+      allow write: if true; // Für Start: alle können schreiben (später mit Auth einschränken)
+    }
+    
+    // Schadensmeldungen - Alle können lesen und schreiben
+    match /schadensmeldungen/{schadenId} {
+      allow read: if true;
+      allow write: if true; // Für Start: alle können schreiben
+    }
+    
+    // Wartungsmeldungen - Alle können lesen und schreiben
+    match /wartungsmeldungen/{wartungId} {
+      allow read: if true;
+      allow write: if true; // Für Start: alle können schreiben
+    }
+  }
+}

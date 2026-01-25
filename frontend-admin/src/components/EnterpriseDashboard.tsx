@@ -4,9 +4,10 @@ import FahrzeugSidebar from './FahrzeugSidebar';
 import FahrzeugDetails from './FahrzeugDetails';
 import VersicherungDetails from './VersicherungDetails';
 import FahrzeugUnterlagen from './FahrzeugUnterlagen';
+import ReifenDetails from './ReifenDetails';
 import FahrzeugReport from './FahrzeugReport';
 
-type ActiveView = 'stammdaten' | 'versicherung' | 'unterlagen';
+type ActiveView = 'stammdaten' | 'versicherung' | 'unterlagen' | 'reifen';
 
 interface EnterpriseDashboardProps {
   activeView: ActiveView;
@@ -17,6 +18,10 @@ export default function EnterpriseDashboard({ activeView }: EnterpriseDashboardP
   const [selectedFahrzeug, setSelectedFahrzeug] = useState<Fahrzeug | null>(null);
   const [schadensmeldungen, setSchadensmeldungen] = useState<Schadensmeldung[]>([]);
   const [wartungsmeldungen, setWartungsmeldungen] = useState<WartungsMeldung[]>([]);
+  const [allMeldungen, setAllMeldungen] = useState<{
+    schäden: Record<number, Schadensmeldung[]>;
+    wartungen: Record<number, WartungsMeldung[]>;
+  }>({ schäden: {}, wartungen: {} });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,7 +34,7 @@ export default function EnterpriseDashboard({ activeView }: EnterpriseDashboardP
     }
   }, [selectedFahrzeug]);
 
-  const loadData = async () => {
+  const loadData = async (): Promise<Fahrzeug[]> => {
     try {
       const response = await fetch('/api/fahrzeuge');
       const data = await response.json();
@@ -39,10 +44,45 @@ export default function EnterpriseDashboard({ activeView }: EnterpriseDashboardP
       if (data.length > 0 && !selectedFahrzeug) {
         setSelectedFahrzeug(data[0]);
       }
+      
+      // Meldungen für alle Fahrzeuge laden
+      await loadAllMeldungen(data);
+      return data;
     } catch (error) {
       console.error('Fehler beim Laden der Fahrzeuge:', error);
+      return [];
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadAllMeldungen = async (fahrzeuge: Fahrzeug[]) => {
+    try {
+      const schädenMap: Record<number, Schadensmeldung[]> = {};
+      const wartungenMap: Record<number, WartungsMeldung[]> = {};
+
+      await Promise.all(
+        fahrzeuge.map(async (fahrzeug) => {
+          try {
+            const [schadenRes, wartungRes] = await Promise.all([
+              fetch(`/api/fahrer/schaden/${fahrzeug.id}`),
+              fetch(`/api/fahrer/wartung/${fahrzeug.id}`),
+            ]);
+
+            const schadenData = await schadenRes.json();
+            const wartungData = await wartungRes.json();
+
+            schädenMap[fahrzeug.id] = schadenData;
+            wartungenMap[fahrzeug.id] = wartungData;
+          } catch (error) {
+            console.error(`Fehler beim Laden der Meldungen für Fahrzeug ${fahrzeug.id}:`, error);
+          }
+        })
+      );
+
+      setAllMeldungen({ schäden: schädenMap, wartungen: wartungenMap });
+    } catch (error) {
+      console.error('Fehler beim Laden aller Meldungen:', error);
     }
   };
 
@@ -58,6 +98,13 @@ export default function EnterpriseDashboard({ activeView }: EnterpriseDashboardP
 
       setSchadensmeldungen(schadenData);
       setWartungsmeldungen(wartungData);
+      
+      // Auch in allMeldungen aktualisieren
+      setAllMeldungen((prev) => ({
+        ...prev,
+        schäden: { ...prev.schäden, [fahrzeugId]: schadenData },
+        wartungen: { ...prev.wartungen, [fahrzeugId]: wartungData },
+      }));
     } catch (error) {
       console.error('Fehler beim Laden der Meldungen:', error);
     }
@@ -67,10 +114,16 @@ export default function EnterpriseDashboard({ activeView }: EnterpriseDashboardP
     setSelectedFahrzeug(fahrzeug);
   };
 
-  const handleDataChange = () => {
-    loadData();
-    if (selectedFahrzeug) {
-      loadMeldungen(selectedFahrzeug.id);
+  const handleDataChange = async () => {
+    const currentSelectedId = selectedFahrzeug?.id;
+    const updatedFahrzeuge = await loadData();
+    // Aktualisiere das ausgewählte Fahrzeug nach dem Neuladen
+    if (currentSelectedId && updatedFahrzeuge.length > 0) {
+      const updatedFahrzeug = updatedFahrzeuge.find((f: Fahrzeug) => f.id === currentSelectedId);
+      if (updatedFahrzeug) {
+        setSelectedFahrzeug(updatedFahrzeug);
+        await loadMeldungen(currentSelectedId);
+      }
     }
   };
 
@@ -91,10 +144,11 @@ export default function EnterpriseDashboard({ activeView }: EnterpriseDashboardP
           selectedFahrzeug={selectedFahrzeug}
           onSelect={handleFahrzeugSelect}
           onDataChange={handleDataChange}
+          allMeldungen={allMeldungen}
         />
       </div>
 
-      {/* Mittlere Spalte: Fahrzeugdetails, Versicherung oder Unterlagen - Breit */}
+      {/* Mittlere Spalte: Fahrzeugdetails, Versicherung, Unterlagen oder Reifen - Breit */}
       {selectedFahrzeug ? (
         <div className="flex-1 h-full min-w-0">
           {activeView === 'stammdaten' ? (
@@ -107,9 +161,14 @@ export default function EnterpriseDashboard({ activeView }: EnterpriseDashboardP
               fahrzeug={selectedFahrzeug}
               onUpdate={handleDataChange}
             />
-          ) : (
+          ) : activeView === 'unterlagen' ? (
             <FahrzeugUnterlagen
               fahrzeug={selectedFahrzeug}
+            />
+          ) : (
+            <ReifenDetails
+              fahrzeug={selectedFahrzeug}
+              onUpdate={handleDataChange}
             />
           )}
         </div>
@@ -134,6 +193,7 @@ export default function EnterpriseDashboard({ activeView }: EnterpriseDashboardP
             fahrzeug={selectedFahrzeug}
             schadensmeldungen={schadensmeldungen}
             wartungsmeldungen={wartungsmeldungen}
+            onMeldungenUpdate={handleDataChange}
           />
         </div>
       )}

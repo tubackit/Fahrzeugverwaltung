@@ -1,7 +1,7 @@
 {
-  "name": "fahrzeugverwaltung",
+  "name": "autologic",
   "version": "1.0.0",
-  "description": "Fahrzeug Plus 6 Enterprise - Fahrzeugverwaltungssoftware",
+  "description": "AutoLogic - Moderne Fahrzeugverwaltungssoftware",
   "private": true,
   "workspaces": [
     "backend",
@@ -20,5 +20,6 @@
     "concurrently": "^8.2.2"
   }
 }
+
 
 

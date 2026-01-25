@@ -3,7 +3,7 @@ interface StatWidgetProps {
   label: string;
   value: string | number;
   unit?: string;
-  color?: 'blue' | 'green' | 'orange' | 'red' | 'gray';
+  color?: 'blue' | 'green' | 'orange' | 'red' | 'gray' | 'purple';
 }
 
 export default function StatWidget({ icon, label, value, unit, color = 'blue' }: StatWidgetProps) {
@@ -13,6 +13,7 @@ export default function StatWidget({ icon, label, value, unit, color = 'blue' }:
     orange: 'text-orange-600',
     red: 'text-red-600',
     gray: 'text-gray-600',
+    purple: 'text-purple-600',
   };
 
   return (

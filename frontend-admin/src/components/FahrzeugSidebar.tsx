@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import clsx from 'clsx';
 import * as XLSX from 'xlsx';
-import type { Fahrzeug } from '../types';
+import type { Fahrzeug, Schadensmeldung, WartungsMeldung } from '../types';
 import Kennzeichen from './Kennzeichen';
 import FahrzeugForm from './FahrzeugForm';
 
@@ -10,6 +10,10 @@ interface FahrzeugSidebarProps {
   selectedFahrzeug: Fahrzeug | null;
   onSelect: (fahrzeug: Fahrzeug) => void;
   onDataChange: () => void;
+  allMeldungen?: {
+    schäden: Record<number, Schadensmeldung[]>;
+    wartungen: Record<number, WartungsMeldung[]>;
+  };
 }
 
 export default function FahrzeugSidebar({
@@ -17,9 +21,55 @@ export default function FahrzeugSidebar({
   selectedFahrzeug,
   onSelect,
   onDataChange,
+  allMeldungen = { schäden: {}, wartungen: {} },
 }: FahrzeugSidebarProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [showForm, setShowForm] = useState(false);
+
+  // Prüft ob die HU in 1 Monat oder weniger fällig ist
+  const isHuFaellig = (fahrzeug: Fahrzeug): boolean => {
+    if (!fahrzeug.huTermin) return false;
+    
+    const huDatum = new Date(fahrzeug.huTermin);
+    const heute = new Date();
+    const einMonatSpater = new Date();
+    einMonatSpater.setMonth(heute.getMonth() + 1);
+    
+    // HU ist fällig, wenn sie in der Vergangenheit liegt oder innerhalb der nächsten 30 Tage
+    return huDatum <= einMonatSpater;
+  };
+
+  // Prüft ob ein Fahrzeug offene Schäden oder Wartungen hat
+  const hasOffeneMeldungen = (fahrzeug: Fahrzeug): boolean => {
+    const schäden = allMeldungen.schäden[fahrzeug.id] || [];
+    const wartungen = allMeldungen.wartungen[fahrzeug.id] || [];
+
+    const offeneSchäden = schäden.filter(
+      (s) => s.status !== 'Abgeschlossen' && s.status !== 'Repariert'
+    );
+
+    const offeneWartungen = wartungen.filter(
+      (w) => w.status !== 'Erledigt'
+    );
+
+    return offeneSchäden.length > 0 || offeneWartungen.length > 0 || isHuFaellig(fahrzeug);
+  };
+
+  // Zählt offene Meldungen für ein Fahrzeug
+  const getOffeneMeldungenCount = (fahrzeug: Fahrzeug): number => {
+    const schäden = allMeldungen.schäden[fahrzeug.id] || [];
+    const wartungen = allMeldungen.wartungen[fahrzeug.id] || [];
+
+    const offeneSchäden = schäden.filter(
+      (s) => s.status !== 'Abgeschlossen' && s.status !== 'Repariert'
+    ).length;
+
+    const offeneWartungen = wartungen.filter(
+      (w) => w.status !== 'Erledigt'
+    ).length;
+
+    return offeneSchäden + offeneWartungen;
+  };
 
   const filteredFahrzeuge = fahrzeuge.filter((f) => {
     const search = searchTerm.toLowerCase();
@@ -66,10 +116,12 @@ export default function FahrzeugSidebar({
       Kostenträger: f.kostentraeger || '',
       Datum_Anschaffung: f.datumAnschaffung || '',
       Vereinbarte_KM: f.vereinbarteKm || '',
-      Bemerkungen: f.bemerkungen || '',
       Versicherungsgesellschaft: f.versicherungsgesellschaft || '',
       Versicherungsnummer: f.versicherungsnummer || '',
       Versicherungsart: f.versicherungsart || '',
+      Versicherungs_Ansprechpartner: f.versicherungsAnsprechpartner || '',
+      Versicherungs_Email: f.versicherungsEmail || '',
+      Versicherungs_Telefon: f.versicherungsTelefon || '',
       Deckungssumme: f.deckungssumme || '',
       Selbstbeteiligung_Teilkasko: f.selbstbeteiligungTeilkasko || '',
       Selbstbeteiligung_Vollkasko: f.selbstbeteiligungVollkasko || '',
@@ -77,6 +129,26 @@ export default function FahrzeugSidebar({
       Vertragsbeginn: f.vertragsbeginn || '',
       Vertragsende: f.vertragsende || '',
       Schadenfreiheitsklasse: f.schadenfreiheitsklasse || '',
+      // Reifen-Daten (Sommerreifen)
+      'Reifen_Marke_Sommer': f.reifenMarkeSommer || '',
+      'Reifen_Modell_Sommer': f.reifenModellSommer || '',
+      'Reifen_Größe_Sommer': f.reifenGroesseSommer || '',
+      'Reifen_Montagedatum_Sommer': f.reifenMontagedatumSommer || '',
+      'Reifen_KM_bei_Montage_Sommer': f.reifenKmBeiMontageSommer || '',
+      'Reifen_Profiltiefe_VL_Sommer': f.reifenProfiltiefeVLSommer || '',
+      'Reifen_Profiltiefe_VR_Sommer': f.reifenProfiltiefeVRSommer || '',
+      'Reifen_Profiltiefe_HL_Sommer': f.reifenProfiltiefeHLSommer || '',
+      'Reifen_Profiltiefe_HR_Sommer': f.reifenProfiltiefeHRSommer || '',
+      // Reifen-Daten (Winterreifen)
+      'Reifen_Marke_Winter': f.reifenMarkeWinter || '',
+      'Reifen_Modell_Winter': f.reifenModellWinter || '',
+      'Reifen_Größe_Winter': f.reifenGroesseWinter || '',
+      'Reifen_Montagedatum_Winter': f.reifenMontagedatumWinter || '',
+      'Reifen_KM_bei_Montage_Winter': f.reifenKmBeiMontageWinter || '',
+      'Reifen_Profiltiefe_VL_Winter': f.reifenProfiltiefeVLWinter || '',
+      'Reifen_Profiltiefe_VR_Winter': f.reifenProfiltiefeVRWinter || '',
+      'Reifen_Profiltiefe_HL_Winter': f.reifenProfiltiefeHLWinter || '',
+      'Reifen_Profiltiefe_HR_Winter': f.reifenProfiltiefeHRWinter || '',
     }));
 
     // Excel-Arbeitsmappe erstellen
@@ -130,10 +202,13 @@ export default function FahrzeugSidebar({
             kostentraeger: row.Kostenträger || '',
             datumAnschaffung: row.Datum_Anschaffung || '',
             vereinbarteKm: row.Vereinbarte_KM || null,
-            bemerkungen: row.Bemerkungen || '',
+            bemerkungen: row.Notizen || row.Bemerkungen || '',
             versicherungsgesellschaft: row.Versicherungsgesellschaft || '',
             versicherungsnummer: row.Versicherungsnummer || '',
             versicherungsart: row.Versicherungsart || '',
+            versicherungsAnsprechpartner: row.Versicherungs_Ansprechpartner || '',
+            versicherungsEmail: row.Versicherungs_Email || '',
+            versicherungsTelefon: row.Versicherungs_Telefon || '',
             deckungssumme: row.Deckungssumme || '',
             selbstbeteiligungTeilkasko: row.Selbstbeteiligung_Teilkasko || '',
             selbstbeteiligungVollkasko: row.Selbstbeteiligung_Vollkasko || '',
@@ -171,7 +246,7 @@ export default function FahrzeugSidebar({
   }
 
   return (
-    <div className="h-full bg-white flex flex-col">
+    <div className="h-full flex flex-col" style={{ backgroundColor: '#faf8f5' }}>
       {/* Hauptaktion - Prominent oben */}
       <div className="p-4 pb-2">
         <button
@@ -201,33 +276,67 @@ export default function FahrzeugSidebar({
           </div>
         ) : (
           <div className="space-y-2 p-2">
-            {filteredFahrzeuge.map((fahrzeug) => (
-              <button
-                key={fahrzeug.id}
-                onClick={() => onSelect(fahrzeug)}
-                className={clsx(
-                  'w-full px-4 py-4 transition-all duration-150',
-                  selectedFahrzeug?.id === fahrzeug.id 
-                    ? 'bg-blue-50' 
-                    : 'bg-gray-50 hover:bg-gray-100'
-                )}
-                style={{ borderRadius: '16px', border: 'none' }}
-                data-test-id={`fahrzeug-item-${fahrzeug.id}`}
-                aria-label={`Fahrzeug ${fahrzeug.kennzeichen} auswählen`}
-              >
-                <div className="flex flex-col items-center gap-2">
-                  <Kennzeichen kennzeichen={fahrzeug.kennzeichen} size="small" />
-                  <div className="text-sm font-medium text-gray-900 text-center">
-                    {fahrzeug.hersteller} {fahrzeug.modell}
-                  </div>
-                      {fahrzeug.nutzer && (
-                        <div className="text-xs text-gray-500 flex items-center gap-1">
-                          <span>👤</span> {fahrzeug.nutzer}
-                        </div>
+            {filteredFahrzeuge.map((fahrzeug) => {
+              const huFaellig = isHuFaellig(fahrzeug);
+              const schäden = allMeldungen.schäden[fahrzeug.id] || [];
+              const wartungen = allMeldungen.wartungen[fahrzeug.id] || [];
+              const hasOffeneSchadenWartung = schäden.some(
+                (s) => s.status !== 'Abgeschlossen' && s.status !== 'Repariert'
+              ) || wartungen.some(
+                (w) => w.status !== 'Erledigt'
+              );
+              const hasOffene = hasOffeneMeldungen(fahrzeug);
+              const offeneCount = getOffeneMeldungenCount(fahrzeug);
+              
+              return (
+                <button
+                  key={fahrzeug.id}
+                  onClick={() => onSelect(fahrzeug)}
+                  className={clsx(
+                    'w-full px-4 py-4 transition-all duration-150 relative border-2 border-black',
+                    selectedFahrzeug?.id === fahrzeug.id 
+                      ? hasOffene
+                        ? 'bg-red-50'
+                        : 'bg-blue-50'
+                      : hasOffene
+                      ? 'bg-red-50 hover:bg-red-100'
+                      : 'bg-gray-50 hover:bg-gray-100'
+                  )}
+                  style={{ borderRadius: '16px' }}
+                  data-test-id={`fahrzeug-item-${fahrzeug.id}`}
+                  aria-label={`Fahrzeug ${fahrzeug.kennzeichen} auswählen`}
+                >
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="relative">
+                      <Kennzeichen kennzeichen={fahrzeug.kennzeichen} size="small" />
+                      {hasOffene && (
+                        <span className="absolute -top-2 -right-2 text-2xl" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>
+                          ⚠️
+                        </span>
                       )}
-                </div>
-              </button>
-            ))}
+                    </div>
+                    <div className="text-sm font-medium text-gray-900 text-center">
+                      {fahrzeug.hersteller} {fahrzeug.modell}
+                    </div>
+                    {fahrzeug.nutzer && (
+                      <div className="text-xs text-gray-500 flex items-center gap-1">
+                        <span>👤</span> {fahrzeug.nutzer}
+                      </div>
+                    )}
+                    {hasOffene && (
+                      <div className="text-xs font-semibold text-red-600 flex items-center gap-1 mt-1">
+                        <span className="text-lg">⚠️</span> 
+                        {huFaellig && hasOffeneSchadenWartung 
+                          ? 'HU fällig / Offene Meldungen'
+                          : huFaellig 
+                          ? 'HU fällig'
+                          : 'Offene Meldungen'}
+                      </div>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
           </div>
         )}
       </div>

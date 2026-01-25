@@ -1,11 +1,13 @@
 import { ReactNode } from 'react';
+import AutoLogicLogo from './AutoLogicLogo';
 
 interface EnterpriseLayoutProps {
   children: ReactNode;
   onStammdatenClick?: () => void;
   onVersicherungClick?: () => void;
   onUnterlagenClick?: () => void;
-  activeView?: 'stammdaten' | 'versicherung' | 'unterlagen';
+  onReifenClick?: () => void;
+  activeView?: 'stammdaten' | 'versicherung' | 'unterlagen' | 'reifen';
 }
 
 interface ToolbarButtonProps {
@@ -37,14 +39,22 @@ function ToolbarButton({ icon, label, onClick, isActive }: ToolbarButtonProps) {
   );
 }
 
-export default function EnterpriseLayout({ children, onStammdatenClick, onVersicherungClick, onUnterlagenClick, activeView }: EnterpriseLayoutProps) {
+export default function EnterpriseLayout({ children, onStammdatenClick, onVersicherungClick, onUnterlagenClick, onReifenClick, activeView }: EnterpriseLayoutProps) {
   return (
     <div className="h-screen flex flex-col bg-gray-100">
       {/* Header / Menüleiste */}
       <header className="bg-white shadow-sm">
-        {/* Überschrift - Minimal */}
-        <div className="bg-white px-6 py-3 flex justify-center">
-          <h1 className="text-base font-medium text-gray-700 px-6 py-2" style={{ borderRadius: '16px', backgroundColor: 'rgb(229 231 235)' }}>Kimmel Zahntechnik - Fahrzeugverwaltung</h1>
+        {/* Überschrift mit Logo */}
+        <div className="bg-white px-6 py-4 flex items-center justify-center shadow-sm">
+          <div className="flex items-center gap-4">
+            <div className="flex-shrink-0">
+              <AutoLogicLogo width={200} height={70} />
+            </div>
+            <div className="hidden md:block border-l border-gray-300 h-12 ml-2"></div>
+            <div className="hidden md:block">
+              <p className="text-gray-700 text-sm font-medium">Fahrzeugverwaltung</p>
+            </div>
+          </div>
         </div>
 
         {/* Navigation - Tab-Style */}
@@ -68,6 +78,12 @@ export default function EnterpriseLayout({ children, onStammdatenClick, onVersic
               onClick={onUnterlagenClick}
               isActive={activeView === 'unterlagen'}
             />
+            <ToolbarButton 
+              icon="🛞" 
+              label="Reifen" 
+              onClick={onReifenClick}
+              isActive={activeView === 'reifen'}
+            />
           </div>
         </div>
       </header>
@@ -88,7 +104,7 @@ export default function EnterpriseLayout({ children, onStammdatenClick, onVersic
           <button className="w-4 h-4 bg-gray-300 hover:bg-gray-400 rounded text-xs">?</button>
         </div>
         <div className="text-gray-500">
-          Copyright © 2024 by Kimmel Fahrzeug Verwaltung
+          Copyright © 2024 AutoLogic
         </div>
       </footer>
     </div>

@@ -181,6 +181,155 @@ router.get('/wartung/:fahrzeugId', (req: Request, res: Response) => {
   }
 });
 
+// Schadensmeldung Status aktualisieren
+router.put('/schaden/:id', (req: Request, res: Response) => {
+  try {
+    const { status } = req.body;
+    
+    if (!status || !['Gemeldet', 'In Bearbeitung', 'Repariert', 'Abgeschlossen'].includes(status)) {
+      return res.status(400).json({ error: 'Ungültiger Status' });
+    }
+    
+    const db = getDatabase();
+    
+    // Prüfen ob Schadensmeldung existiert
+    const exists = db.prepare('SELECT id FROM schadensmeldungen WHERE id = ?').get(req.params.id);
+    if (!exists) {
+      return res.status(404).json({ error: 'Schadensmeldung nicht gefunden' });
+    }
+    
+    // Status aktualisieren
+    db.prepare(`
+      UPDATE schadensmeldungen
+      SET status = ?, updatedAt = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `).run(status, req.params.id);
+    
+    const aktualisierteSchadensmeldung = db.prepare(
+      'SELECT * FROM schadensmeldungen WHERE id = ?'
+    ).get(req.params.id) as Schadensmeldung;
+    
+    res.json(aktualisierteSchadensmeldung);
+  } catch (error) {
+    console.error('Fehler beim Aktualisieren der Schadensmeldung:', error);
+    res.status(500).json({ error: 'Interner Serverfehler' });
+  }
+});
+
+// Wartungsmeldung Status aktualisieren
+router.put('/wartung/:id', (req: Request, res: Response) => {
+  try {
+    const { status } = req.body;
+    
+    if (!status || !['Gemeldet', 'Bestätigt', 'Geplant', 'Erledigt'].includes(status)) {
+      return res.status(400).json({ error: 'Ungültiger Status' });
+    }
+    
+    const db = getDatabase();
+    
+    // Prüfen ob Wartungsmeldung existiert
+    const exists = db.prepare('SELECT id FROM wartungsmeldungen WHERE id = ?').get(req.params.id);
+    if (!exists) {
+      return res.status(404).json({ error: 'Wartungsmeldung nicht gefunden' });
+    }
+    
+    // Status aktualisieren
+    db.prepare(`
+      UPDATE wartungsmeldungen
+      SET status = ?, updatedAt = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `).run(status, req.params.id);
+    
+    const aktualisierteWartungsmeldung = db.prepare(
+      'SELECT * FROM wartungsmeldungen WHERE id = ?'
+    ).get(req.params.id) as WartungsMeldung;
+    
+    res.json(aktualisierteWartungsmeldung);
+  } catch (error) {
+    console.error('Fehler beim Aktualisieren der Wartungsmeldung:', error);
+    res.status(500).json({ error: 'Interner Serverfehler' });
+  }
+});
+
+// Reifen-Profiltiefe aktualisieren
+router.post('/reifen-profiltiefe', (req: Request, res: Response) => {
+  try {
+    const { fahrzeugId, reifenArt, profiltiefen, kmStand } = req.body;
+    
+    if (!fahrzeugId || !reifenArt || !profiltiefen) {
+      return res.status(400).json({ error: 'Fahrzeug-ID, Reifenart und Profiltiefen sind erforderlich' });
+    }
+    
+    if (!['sommer', 'winter'].includes(reifenArt)) {
+      return res.status(400).json({ error: 'Reifenart muss "sommer" oder "winter" sein' });
+    }
+    
+    const db = getDatabase();
+    
+    // Prüfen ob Fahrzeug existiert
+    const exists = db.prepare('SELECT id FROM fahrzeuge WHERE id = ?').get(fahrzeugId);
+    if (!exists) {
+      return res.status(404).json({ error: 'Fahrzeug nicht gefunden' });
+    }
+    
+    // Profiltiefen basierend auf Reifenart aktualisieren
+    const { vl, vr, hl, hr } = profiltiefen;
+    const suffix = reifenArt === 'sommer' ? 'Sommer' : 'Winter';
+    
+    // Bereite Update-Statement vor
+    const updateFields: string[] = [];
+    const updateValues: (number | null)[] = [];
+    
+    if (vl !== null && vl !== undefined) {
+      updateFields.push(`reifenProfiltiefeVL${suffix} = ?`);
+      updateValues.push(vl);
+    }
+    if (vr !== null && vr !== undefined) {
+      updateFields.push(`reifenProfiltiefeVR${suffix} = ?`);
+      updateValues.push(vr);
+    }
+    if (hl !== null && hl !== undefined) {
+      updateFields.push(`reifenProfiltiefeHL${suffix} = ?`);
+      updateValues.push(hl);
+    }
+    if (hr !== null && hr !== undefined) {
+      updateFields.push(`reifenProfiltiefeHR${suffix} = ?`);
+      updateValues.push(hr);
+    }
+    
+    // Wenn kmStand vorhanden ist, auch reifenKmBeiMontage aktualisieren (falls nicht vorhanden)
+    if (kmStand !== null && kmStand !== undefined) {
+      const kmField = `reifenKmBeiMontage${suffix}`;
+      const currentKm = db.prepare(`SELECT ${kmField} FROM fahrzeuge WHERE id = ?`).get(fahrzeugId) as Record<string, unknown>;
+      if (!currentKm || currentKm[kmField] === null || currentKm[kmField] === undefined) {
+        updateFields.push(`${kmField} = ?`);
+        updateValues.push(kmStand);
+      }
+    }
+    
+    if (updateFields.length === 0) {
+      return res.status(400).json({ error: 'Keine Profiltiefen zum Aktualisieren' });
+    }
+    
+    updateFields.push('updatedAt = CURRENT_TIMESTAMP');
+    updateValues.push(fahrzeugId);
+    
+    const updateQuery = `
+      UPDATE fahrzeuge
+      SET ${updateFields.join(', ')}
+      WHERE id = ?
+    `;
+    
+    db.prepare(updateQuery).run(...updateValues);
+    
+    res.json({ success: true, message: 'Profiltiefen erfolgreich aktualisiert' });
+  } catch (error) {
+    console.error('Fehler beim Aktualisieren der Profiltiefen:', error);
+    res.status(500).json({ error: 'Interner Serverfehler' });
+  }
+});
+
 export default router;
+
 
 

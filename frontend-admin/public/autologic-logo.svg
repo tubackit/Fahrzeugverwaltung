@@ -1,0 +1,47 @@
+<svg width="200" height="80" viewBox="0 0 200 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Auto-Umriss (weiß) -->
+  <path d="M20 50 L30 35 L50 30 L70 28 L90 28 L110 30 L130 32 L150 35 L160 38 L170 42 L175 45 L180 50 L180 55 L175 58 L170 60 L160 62 L150 63 L140 64 L130 64 L120 63 L110 62 L100 61 L90 60 L80 59 L70 58 L60 57 L50 56 L40 55 L30 54 L25 52 L20 50 Z" 
+        stroke="white" 
+        stroke-width="2" 
+        fill="none" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+  
+  <!-- Schaltkreis-Design (orange) -->
+  <!-- Vorderer orange Kreis -->
+  <circle cx="70" cy="40" r="4" fill="#FF6B35" stroke="#FF6B35" stroke-width="1"/>
+  
+  <!-- Hinterer orange Kreis -->
+  <circle cx="130" cy="45" r="4" fill="#FF6B35" stroke="#FF6B35" stroke-width="1"/>
+  
+  <!-- Verbindungslinie (orange, gewunden wie Schaltkreis) -->
+  <path d="M70 40 Q85 38, 100 42 Q115 46, 130 45" 
+        stroke="#FF6B35" 
+        stroke-width="2" 
+        fill="none" 
+        stroke-linecap="round"/>
+  
+  <!-- Zusätzliche Schaltkreis-Linien -->
+  <path d="M65 35 Q75 33, 85 35" 
+        stroke="#FF6B35" 
+        stroke-width="1.5" 
+        fill="none" 
+        stroke-linecap="round"/>
+  <path d="M125 43 Q135 41, 145 43" 
+        stroke="#FF6B35" 
+        stroke-width="1.5" 
+        fill="none" 
+        stroke-linecap="round"/>
+  
+  <!-- Text "AutoLogic" (weiß) -->
+  <text x="100" y="70" 
+        font-family="Arial, sans-serif" 
+        font-size="18" 
+        font-weight="600" 
+        fill="white" 
+        text-anchor="middle" 
+        letter-spacing="1px">AutoLogic</text>
+</svg>
+
+
+

@@ -1,7 +1,7 @@
 {
-  "name": "fahrzeugverwaltung-backend",
+  "name": "autologic-backend",
   "version": "1.0.0",
-  "description": "Backend API für Fahrzeugverwaltung",
+  "description": "AutoLogic Backend API",
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
@@ -25,5 +25,6 @@
     "tsx": "^4.7.0"
   }
 }
+
 
 

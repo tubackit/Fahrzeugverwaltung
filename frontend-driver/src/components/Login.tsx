@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { Fahrzeug, LoginResponse } from '../types';
+import AutoLogicLogo from './AutoLogicLogo';
 
 interface LoginProps {
   onLoginSuccess: (fahrzeug: Fahrzeug) => void;
@@ -41,11 +42,13 @@ export default function Login({ onLoginSuccess }: LoginProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">🚗 Fahrer-Portal</h1>
-          <p className="text-gray-600">Fahrzeug Plus 6 Enterprise</p>
+          <div className="flex justify-center mb-6">
+            <AutoLogicLogo width={200} height={70} />
+          </div>
+          <h1 className="text-xl font-semibold text-gray-700">Fahrer-Portal</h1>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -119,5 +122,6 @@ export default function Login({ onLoginSuccess }: LoginProps) {
     </div>
   );
 }
+
 
 

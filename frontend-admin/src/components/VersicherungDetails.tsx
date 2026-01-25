@@ -52,24 +52,32 @@ export default function VersicherungDetails({ fahrzeug, onUpdate }: Versicherung
             >
               ✏️ Bearbeiten
             </button>
-            {hasInsuranceData && fahrzeug.versicherungsgesellschaft && (
+            {hasInsuranceData && (fahrzeug.versicherungsEmail || fahrzeug.versicherungsgesellschaft) && (
               <button
                 onClick={() => {
+                  const email = fahrzeug.versicherungsEmail || '';
                   const subject = encodeURIComponent(`Anfrage zu Versicherung - ${fahrzeug.kennzeichen} (${fahrzeug.hersteller} ${fahrzeug.modell})`);
+                  const ansprechpartnerText = fahrzeug.versicherungsAnsprechpartner 
+                    ? `Ansprechpartner: ${fahrzeug.versicherungsAnsprechpartner}\n`
+                    : '';
                   const body = encodeURIComponent(
-                    `Sehr geehrte Damen und Herren,\n\n` +
+                    `${fahrzeug.versicherungsAnsprechpartner ? `Sehr geehrte/r ${fahrzeug.versicherungsAnsprechpartner},\n\n` : 'Sehr geehrte Damen und Herren,\n\n'}` +
                     `hiermit wende ich mich bezüglich folgender Versicherung an Sie:\n\n` +
                     `Versicherungsnummer: ${fahrzeug.versicherungsnummer || 'N/A'}\n` +
                     `Fahrzeug: ${fahrzeug.hersteller} ${fahrzeug.modell}\n` +
                     `Kennzeichen: ${fahrzeug.kennzeichen}\n` +
                     `FIN: ${fahrzeug.fin || 'N/A'}\n` +
-                    `Versicherungsart: ${fahrzeug.versicherungsart || 'N/A'}\n\n` +
+                    `Versicherungsart: ${fahrzeug.versicherungsart || 'N/A'}\n${ansprechpartnerText}\n` +
                     `Grund der Anfrage:\n` +
                     `[Bitte hier den Grund eintragen]\n\n` +
                     `Mit freundlichen Grüßen\n` +
-                    `Kimmel Zahntechnik`
+                    `AutoLogic`
                   );
-                  window.location.href = `mailto:?subject=${subject}&body=${body}`;
+                  if (email) {
+                    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+                  } else {
+                    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+                  }
                 }}
                 className="bg-blue-500 hover:bg-blue-600 text-white px-5 py-2.5 font-medium transition-colors shadow-sm flex items-center gap-2"
                 style={{ borderRadius: '16px' }}
@@ -115,6 +123,17 @@ export default function VersicherungDetails({ fahrzeug, onUpdate }: Versicherung
                 />
               </div>
             </DataCard>
+
+            {/* Kontaktdaten Card */}
+            {(fahrzeug.versicherungsAnsprechpartner || fahrzeug.versicherungsEmail || fahrzeug.versicherungsTelefon) && (
+              <DataCard title="Kontaktdaten" icon="👤">
+                <div className="grid grid-cols-2 gap-x-12 gap-y-5">
+                  <DataField label="Ansprechpartner" value={fahrzeug.versicherungsAnsprechpartner} />
+                  <DataField label="E-Mail" value={fahrzeug.versicherungsEmail} type="email" />
+                  <DataField label="Telefonnummer" value={fahrzeug.versicherungsTelefon} type="tel" />
+                </div>
+              </DataCard>
+            )}
 
             {/* Deckung & Kosten Card */}
             <DataCard title="Deckung & Kosten" icon="💰">

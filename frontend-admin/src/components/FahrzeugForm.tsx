@@ -373,7 +373,7 @@ export default function FahrzeugForm({ fahrzeug, onClose }: FahrzeugFormProps) {
 
           <div>
             <label htmlFor="autohaus" className="block text-sm font-medium text-gray-700 mb-2">
-              Autohaus
+              Autohaus (E-Mail)
             </label>
             <input
               id="autohaus"
@@ -381,10 +381,10 @@ export default function FahrzeugForm({ fahrzeug, onClose }: FahrzeugFormProps) {
               type="text"
               value={formData.autohaus}
               onChange={handleChange}
-              placeholder="z.B. Autohaus Müller"
+              placeholder="z.B. autohaus@beispiel.de"
               className="w-full px-4 py-2 border border-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-gray-400 outline-none transition"
               data-test-id="input-autohaus"
-              aria-label="Autohaus"
+              aria-label="Autohaus E-Mail-Adresse"
             />
           </div>
 
@@ -495,21 +495,21 @@ export default function FahrzeugForm({ fahrzeug, onClose }: FahrzeugFormProps) {
           </div>
         </div>
 
-        {/* Bemerkungen */}
+        {/* Notizen */}
         <div>
           <label htmlFor="bemerkungen" className="block text-sm font-medium text-gray-700 mb-2">
-            Bemerkungen
+            Notizen
           </label>
           <textarea
             id="bemerkungen"
             name="bemerkungen"
             value={formData.bemerkungen}
             onChange={handleChange}
-            rows={3}
-            placeholder="Zusätzliche Informationen..."
+            rows={4}
+            placeholder="Notizen, Anmerkungen oder wichtige Informationen zum Fahrzeug..."
             className="w-full px-4 py-2 border border-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-gray-400 outline-none transition resize-none"
-            data-test-id="textarea-bemerkungen"
-            aria-label="Bemerkungen"
+            data-test-id="textarea-notizen"
+            aria-label="Notizen"
           />
         </div>
         </div>

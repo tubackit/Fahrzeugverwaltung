@@ -17,7 +17,7 @@ export default function Layout({ children, activeTab, onTabChange }: LayoutProps
               <div className="text-3xl">🚗</div>
               <div>
                 <h1 className="text-xl font-bold text-gray-900">
-                  Fahrzeug Plus 6 Enterprise
+                  AutoLogic
                 </h1>
                 <p className="text-xs text-gray-500">Admin-Dashboard</p>
               </div>
@@ -65,5 +65,6 @@ export default function Layout({ children, activeTab, onTabChange }: LayoutProps
     </div>
   );
 }
+
 
 

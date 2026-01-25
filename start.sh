@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚗 Fahrzeug Plus 6 Enterprise - Starte alle Server..."
+echo "🚗 AutoLogic - Starte alle Server..."
 echo ""
 
 # Farben für Output

@@ -1,4 +1,4 @@
-# Fahrzeug Plus 6 Enterprise - Deployment Guide
+# AutoLogic - Deployment Guide
 
 ## Lokale Installation
 
@@ -11,7 +11,7 @@
 ```bash
 # 1. Repository klonen
 git clone <IHR-REPOSITORY-URL>
-cd Fahrzeugverwaltung
+cd autologic
 
 # 2. Dependencies installieren
 npm install
@@ -97,7 +97,7 @@ docker-compose up
 
 ## Features
 
-✅ Fahrzeugverwaltung mit vollständigen Stammdaten
+✅ Fahrzeugverwaltung mit vollständigen Stammdaten (AutoLogic)
 ✅ Versicherungsdaten & Untersuchungstermine
 ✅ Schadensmeldungen & Wartungsmeldungen
 ✅ Kilometerstand-Tracking
